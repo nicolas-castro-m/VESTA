@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="240" height="48" viewBox="0 0 240 48">
+  <rect x="0" y="8" width="3" height="32" fill="#8F263D"/>
+  <polyline points="12,34 20,26 27,30 36,16" fill="none" stroke="#C34B62" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+  <text x="46" y="27" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="600" letter-spacing="5" fill="#F1F1F3">VESTA</text>
+  <text x="46" y="41" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="7.5" letter-spacing="2.2" fill="#A0A4AE">QUANTITATIVE INTELLIGENCE</text>
+</svg>

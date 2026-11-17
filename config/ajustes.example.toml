@@ -1,0 +1,19 @@
+# Configuración de ejemplo de VESTA.
+# Copie este archivo como config/ajustes.toml para cambiar los valores por defecto.
+# Lo guardado desde la página Configuración (base local) tiene prioridad sobre este archivo.
+# No contiene credenciales: VESTA usa fuentes públicas y no necesita claves.
+
+[analisis]
+alfa = 0.05               # nivel de significancia de las pruebas
+anios_historia = 5        # años de historia para modelar (3, 4 o 5)
+max_p = 3                 # rejilla ARIMA: p en 0..max_p (documento: 0..3)
+max_q = 3                 # rejilla ARIMA: q en 0..max_q (documento: 0..3)
+d = 1                     # diferenciación sobre el log-precio
+incluir_deriva = false    # allowdrift = FALSE en el documento
+prop_train = 0.80         # proporción inicial de entrenamiento
+criterio = "bic"          # "bic" o "aic" para la especificación
+reestimar_cada = 1        # 1 = reajuste en cada origen de pronóstico rodante
+nivel_intervalo = 0.95    # nivel del intervalo de predicción
+lags_ljung_box = 10
+lags_arch = 10
+lag_max_acf = 30

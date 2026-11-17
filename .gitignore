@@ -1,0 +1,24 @@
+# Entornos y cachés
+.venv/
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ipynb_checkpoints/
+
+# Datos y resultados locales (se regeneran; pueden contener el historial personal)
+data/precios/
+data/cache/
+data/*.sqlite
+data/*.sqlite-journal
+data/tickers_sp500.csv
+validacion/referencia_r/
+
+# Configuración y secretos locales
+config/ajustes.toml
+.env
+.streamlit/secrets.toml
+
+# Sistema
+.DS_Store
+Thumbs.db
