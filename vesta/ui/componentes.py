@@ -62,6 +62,12 @@ def ajustes() -> A.Ajustes:
 
 
 def estado_inicial() -> None:
+    """Estado compartido entre páginas.
+
+    "ticker", "horizonte" y "ventana" son claves propias, no de widgets: desde
+    Streamlit 1.5x el valor de un widget se borra al cambiar de página (salvo
+    persist_state="session"), así que los widgets solo copian su valor aquí.
+    """
     st.session_state.setdefault("ticker", TICKER_DEFECTO)
     st.session_state.setdefault("horizonte", "Mensual")
     st.session_state.setdefault("ventana", "5 años")
@@ -71,7 +77,7 @@ def estado_inicial() -> None:
 
 
 def ir_a_activo(ticker: str, pagina: str = "paginas/analisis.py") -> None:
-    st.session_state["ticker_pendiente"] = ticker
+    st.session_state["ticker"] = ticker
     st.switch_page(pagina)
 
 
@@ -93,6 +99,16 @@ def barra_lateral() -> None:
     except Exception:
         pass
     u = universo_cacheado()
+
+    def copiar_seleccion():
+        st.session_state["ticker"] = st.session_state["_ticker_w"]
+
+    def usar_libre():
+        valor = (st.session_state.get("_ticker_libre") or "").strip().upper()
+        if valor:
+            st.session_state["ticker"] = valor
+            st.session_state["_ticker_libre"] = ""
+
     with st.sidebar:
         if u is not None and not u.empty:
             orden = u.sort_values("ticker")
@@ -100,9 +116,14 @@ def barra_lateral() -> None:
             lista = list(etiquetas)
             if st.session_state["ticker"] not in etiquetas:
                 lista = [st.session_state["ticker"]] + lista
-            st.selectbox("Activo", lista, key="ticker", format_func=lambda t: etiquetas.get(t, t))
+            st.session_state["_ticker_w"] = st.session_state["ticker"]
+            st.selectbox("Activo", lista, key="_ticker_w", on_change=copiar_seleccion,
+                         format_func=lambda t: etiquetas.get(t, t))
+            st.text_input("Otro ticker (Yahoo Finance)", key="_ticker_libre", on_change=usar_libre,
+                          placeholder="GRBMF, DIO.DE…", help="Escriba un ticker fuera del S&P 500 y pulse Enter.")
         else:
-            st.text_input("Ticker (Yahoo Finance)", key="ticker",
+            st.session_state["_ticker_libre"] = st.session_state["ticker"]
+            st.text_input("Ticker (Yahoo Finance)", key="_ticker_libre", on_change=usar_libre,
                           help="Construya el universo en el Explorador para buscar por nombre.")
         st.caption(AVISO)
 

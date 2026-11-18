@@ -19,7 +19,12 @@ opciones = {"Piloto · fase 1 (Dior, Grupo Bimbo, Disney)": U.piloto()["ticker"]
 if muestra is not None:
     opciones["Muestra estratificada · fase 2 (21 acciones)"] = muestra["ticker"].tolist()
 c1, c2 = st.columns([2, 3])
-eleccion = c1.radio("Conjunto", list(opciones), key="conjunto_comparacion")
+st.session_state.setdefault("conjunto_comparacion", list(opciones)[0])
+if st.session_state["conjunto_comparacion"] not in opciones:
+    st.session_state["conjunto_comparacion"] = list(opciones)[0]
+st.session_state["_conjunto_w"] = st.session_state["conjunto_comparacion"]
+eleccion = c1.radio("Conjunto", list(opciones), key="_conjunto_w",
+                    on_change=lambda: st.session_state.update(conjunto_comparacion=st.session_state["_conjunto_w"]))
 with c2:
     hz = selector_horizonte()
 tickers = opciones[eleccion]

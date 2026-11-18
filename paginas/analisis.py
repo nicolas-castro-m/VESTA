@@ -121,8 +121,10 @@ else:
 
 # ── Más información estadística ──────────────────────────────────────────
 with st.expander("Más información estadística", icon=":material/functions:"):
-    st.radio("Construcción de la serie del horizonte", list(S.CONSTRUCCIONES), key="construccion", horizontal=True,
-             format_func=lambda c: S.CONSTRUCCIONES[c])
+    st.session_state["_construccion_w"] = construccion
+    st.radio("Construcción de la serie del horizonte", list(S.CONSTRUCCIONES), key="_construccion_w", horizontal=True,
+             format_func=lambda c: S.CONSTRUCCIONES[c],
+             on_change=lambda: st.session_state.update(construccion=st.session_state["_construccion_w"]))
     if construccion == "solapada":
         st.caption("Con la construcción solapada, observaciones consecutivas comparten h − 1 días: eso induce "
                    "autocorrelación artificial (afecta a rachas, Ljung-Box y ACF). Compare con la versión no solapada.")
