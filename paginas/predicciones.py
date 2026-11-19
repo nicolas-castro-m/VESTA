@@ -1,3 +1,5 @@
+from dataclasses import replace
+
 import numpy as np
 import pandas as pd
 import streamlit as st
@@ -32,6 +34,21 @@ info = info_activo(ticker)
 cabecera("Predicciones", info.get("empresa") or ticker, ticker, datos)
 hz = selector_horizonte()
 h = HORIZONTES[hz]
+
+
+def _cambiar_criterio():
+    elegido = st.session_state.get("_criterio_w")
+    if elegido:  # el control segmentado permite deseleccionar; en ese caso se conserva el criterio actual
+        st.session_state["ajustes"] = replace(ajustes(), criterio=elegido.lower())
+
+
+st.session_state["_criterio_w"] = aj.criterio.upper()
+st.segmented_control(
+    "Criterio de selección del ARIMA", ["BIC", "AIC"], key="_criterio_w", on_change=_cambiar_criterio,
+    help="BIC (el del documento) castiga más los parámetros y en acciones líquidas suele elegir la caminata "
+         "aleatoria, ARIMA(0,1,0). AIC castiga menos y elige modelos con más rezagos. En ambos casos la "
+         "evaluación fuera de muestra dice si el modelo realmente mejora a la caminata aleatoria.")
+aj = ajustes()
 st.session_state.setdefault("predicciones", {})
 clave = (ticker, hz, aj.firma())
 
@@ -101,6 +118,12 @@ tarjetas(f"Resultado · {ticker} · {hz} ({h} días bursátiles)", [
 st.plotly_chart(G.trayectoria(datos.precios, pr), use_container_width=True)
 
 veredicto = m["Veredicto"]
+if pr.modelo.p == 0 and pr.modelo.q == 0:
+    st.info(f"Con el criterio {aj.criterio.upper()}, ningún término AR o MA de {ticker} mejoró el ajuste lo "
+            "suficiente para justificar su costo: el modelo elegido es la caminata aleatoria, ARIMA(0,1,0). "
+            "No es un error; es la conclusión de los datos (eficiencia débil del mercado)."
+            + (" Puede probar el criterio AIC arriba para ver una especificación más rica y si mejora fuera de muestra."
+               if aj.criterio == "bic" else ""), icon=":material/info:")
 tarjetas("Desempeño fuera de muestra del modelo seleccionado", [
     tarjeta("MAE", num(m["MAE"] * 100, 2), "p.p.", "Error absoluto medio del rendimiento acumulado. Rango 0 a ∞; ideal 0. "
             "Su magnitud depende de la escala y el horizonte.", referencia=f"Caminata aleatoria: {num(m['MAE_RW'] * 100, 2)} p.p."),
